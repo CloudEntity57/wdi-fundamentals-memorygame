@@ -1,63 +1,94 @@
-// console.log("JS file is connected to HTML! Woo!");
-// var cardOne = "queen";
-// var cardTwo = "queen";
-// var cardThree = "king";
-// var cardFour = "king";
 
-// if(cardOne === cardTwo){
-// 	alert("you found a match!");
-// }else{
-// 	alert("sorry, try again.");
-// };
 
 
 var cards = ['queen','queen','king','king'];
 var cardsInPlay = [];
 
-function appendCards(str){
+function createBoard(str){
+var cardsUp = [];
 var gameBoard = document.getElementById(str);
 for(i=0; i<=cards.length-1; i++){
 	var card = document.createElement('div');
+	gameBoard.appendChild(card);
 	card.className = "card";
 	card.setAttribute('data-card',cards[i]);
-	gameBoard.appendChild(card);
-}
+	cardsUp.push(card);
+	var thisCard = cardsUp[i];
+	thisCard.addEventListener('click',function(){displayCard(this)});
+	
+	// console.log("array is: " + cardsUp);
+};
 }
 
-appendCards('game-board');
 
-var dealt = document.getElementsByClassName('card');
-document.getElementsByClassName('card').addEventListener('click',isTwoCards);
+createBoard('card-area');
+
+function displayCard(thisElement){
+	var king_card = '<img src = "king_card.png" alt = "king card" />';
+	var queen_card = '<img src = "queen_card.png" alt = "king card" />';
+	if(thisElement.getAttribute('data-card') === 'queen'){
+		thisElement.innerHTML = (queen_card);
+	}else{
+		thisElement.innerHTML = (king_card);
+	};
+	cardsInPlay.push(thisElement.getAttribute('data-card'));
+	console.log("cardsInPlay = " + cardsInPlay);
+	isTwoCards();
+}
+
+
+
+
+var attrs = [];
 
 function isMatch(){
-	var attrs = [];
-	for(i=0; i<= dealt.length-1; i++){
-		var current = dealt[i].getAttribute("data-card");
+	function boardReset(){
+		setTimeout(function() {
+		var newCards = document.createElement('div');
+		newCards.setAttribute('id','card-area');
+		var gameBoard = document.getElementById('game-board');
+		var cardArea = document.getElementById('card-area');
+		gameBoard.removeChild(cardArea);
+		gameBoard.appendChild(newCards);
+		createBoard('card-area');
+		document.getElementById('game-board').removeChild(winAlert);
+	}, 600);
+	}
+	for(i=0; i<= cardsInPlay.length-1; i++){
+		var current = cardsInPlay[i];
 		attrs.push(current);
 		for(x=0; x<=attrs.length-2; x++){
 			if(attrs[x] === current){
-				console.log("It's a match!!");
+				var winAlert = document.createElement('div');
+				winAlert.setAttribute('id','winAlert');
+				winAlert.innerHTML = "It's a Match!!";
+				document.getElementById('game-board').appendChild(winAlert);
+				boardReset();
+				cardsInPlay = [];
 				return true;
 			};
 		};
 
 	};
-	console.log('false');
-	return false;
+	
+	cardsInPlay = [];
+	boardReset();
+
 }
-window.onload = function(){
-	isMatch();
-};
+
+
+
 
 function isTwoCards(){
-	cardsInPlay.push(this.getAttribute("data-card"));
 	if(cardsInPlay.length === 2){
-		isMatch(cardsInPlay);
-
-		cardsInPlay = [];
+		isMatch();
+		attrs = [];
 	};
 
 }
+
+
+
 
 
 
